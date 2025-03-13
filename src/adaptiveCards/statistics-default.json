@@ -1,0 +1,43 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "TextBlock",
+            "size": "Medium",
+            "weight": "Bolder",
+            "text": "${title}"
+        },
+        {
+            "type": "TextBlock",
+            "text": "${text}",
+            "wrap": true
+        },
+        {
+            "type": "FactSet",
+            "facts": [
+                {
+                    "title": "Most messages:",
+                    "value": "${msgMost}"
+                },
+                {
+                    "title": "Least messages:",
+                    "value": "${msgLeast}"
+                },
+                {
+                    "title": "Message count:",
+                    "value": "${msgCount}"
+                },
+                {
+                    "title": "File count:",
+                    "value": "${fileCount}"
+                },
+                {
+                    "title": "User count:",
+                    "value": "${userCount}"
+                }
+            ]
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.6"
+}

@@ -5,6 +5,7 @@ import { notificationApp } from "./internal/initialize";
 import { TeamsBot } from "./teamsBot";
 import { NotificationTargetType } from "@microsoft/teamsfx";
 import { notificationJob } from "./scheduler";
+import { getAllData } from "./graph";
 
 // Create express application.
 const expressApp = express();
@@ -59,6 +60,8 @@ expressApp.post("/api/notification", async (req, res) => {
 
 notificationJob.start();
 console.log("Notification job started.");
+
+getAllData()
 
 // Register an API endpoint with `express`. Teams sends messages to your application
 // through this endpoint.

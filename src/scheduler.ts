@@ -1,5 +1,5 @@
 import * as ACData from "adaptivecards-templating";
-import notificationTemplate from "./adaptiveCards/notification-default.json";
+import statisticsTemplate from "./adaptiveCards/statistics-default.json";
 import { notificationApp } from "./internal/initialize";
 import { NotificationTargetType } from "@microsoft/teamsfx";
 import { CronJob } from 'cron';
@@ -20,12 +20,15 @@ export const notificationJob = new CronJob('0 * * * * *', async () => {
         for (const target of installations) {
         if (target.type === NotificationTargetType.Channel) {
             await target.sendAdaptiveCard(
-            new ACData.Template(notificationTemplate).expand({
+            new ACData.Template(statisticsTemplate).expand({
                 $root: {
-                title: "New Event Occurred!",
-                appName: "Contoso App Notification",
-                description: `This is a sample timer-triggered notification to ${target.type}`,
-                notificationUrl: "https://aka.ms/teamsfx-notification-new",
+                title: "Team Statistics",
+                text: "todo text",
+                msgMost: "todo msgMost",
+                msgLeast: "todo msgLeast",
+                msgCount: "todo msgCount",
+                fileCount: "todo fileCount",
+                userCount: "todo userCount",
                 },
             })
             );
