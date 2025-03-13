@@ -11,28 +11,28 @@ export const notificationJob = new CronJob('0 * * * * *', async () => {
     let continuationToken: string | undefined = undefined;
     do {
         const pagedData = await notificationApp.notification.getPagedInstallations(
-        pageSize,
-        continuationToken
+            pageSize,
+            continuationToken
         );
         const installations = pagedData.data;
         continuationToken = pagedData.continuationToken;
-    
+
         for (const target of installations) {
-        if (target.type === NotificationTargetType.Channel) {
-            await target.sendAdaptiveCard(
-            new ACData.Template(statisticsTemplate).expand({
-                $root: {
-                title: "Team Statistics",
-                text: "todo text",
-                msgMost: "todo msgMost",
-                msgLeast: "todo msgLeast",
-                msgCount: "todo msgCount",
-                fileCount: "todo fileCount",
-                userCount: "todo userCount",
-                },
-            })
-            );
-        }
+            if (target.type === NotificationTargetType.Channel) {
+                await target.sendAdaptiveCard(
+                    new ACData.Template(statisticsTemplate).expand({
+                        $root: {
+                            title: "Team Statistics",
+                            text: "todo text",
+                            msgMost: "todo msgMost",
+                            msgLeast: "todo msgLeast",
+                            msgCount: "todo msgCount",
+                            fileCount: "todo fileCount",
+                            userCount: "todo userCount",
+                        },
+                    })
+                );
+            }
         }
     } while (continuationToken);
 }, null, false, 'UTC');
