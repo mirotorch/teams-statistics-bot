@@ -4,9 +4,19 @@ import { notificationApp } from "./internal/initialize";
 import { NotificationTargetType } from "@microsoft/teamsfx";
 import { CronJob } from 'cron';
 
+const jobs: Record<string, CronJob> = {};
 
-// Schedule a cron job to send notifications every minute.
-export const notificationJob = new CronJob('0 * * * * *', async () => {
+
+export function addNotificationJob(teamId: string) {
+    jobs[teamId] = new CronJob('0 * * * * *', async () => {
+        await sendStatistics(teamId);
+    }, null, false, 'UTC');
+    console.log(`Job added for team ${teamId}`);
+    jobs[teamId].start();
+}
+
+
+async function sendStatistics(teamId: string) {
     const pageSize = 100;
     let continuationToken: string | undefined = undefined;
     do {
@@ -17,8 +27,9 @@ export const notificationJob = new CronJob('0 * * * * *', async () => {
         const installations = pagedData.data;
         continuationToken = pagedData.continuationToken;
 
+        let sent: Boolean = false;
         for (const target of installations) {
-            if (target.type === NotificationTargetType.Channel) {
+            if (target.type === NotificationTargetType.Channel && target.conversationReference?.conversation?.id === teamId) {
                 await target.sendAdaptiveCard(
                     new ACData.Template(statisticsTemplate).expand({
                         $root: {
@@ -32,7 +43,15 @@ export const notificationJob = new CronJob('0 * * * * *', async () => {
                         },
                     })
                 );
+                sent = true;
+                break;
             }
         }
+        if (!sent) {
+            console.log(`No channel found for team ${teamId}`);
+            jobs[teamId].stop();
+            return;
+        }
     } while (continuationToken);
-}, null, false, 'UTC');
+    console.log(`Statistics sent for team ${teamId}`);
+}
