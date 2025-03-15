@@ -35,7 +35,7 @@ async function getMembers(teamId: string): Promise<Array<string>> {
     SELECT UserId
     FROM Users
     WHERE TeamId = ${teamId} And IsInTeam = 1`;
-    return result.recordset.map(row => row.UserId);
+    return result.recordset.map((row: { UserId: any; }) => row.UserId);
 }
 
 async function updateStatistics(teamId: string, members: Array<string>, messages: Record<string, number>) {
