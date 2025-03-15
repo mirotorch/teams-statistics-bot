@@ -10,18 +10,7 @@ configDotenv({
 // to use local server for testing
 const url = process.env.API_URL;
 
-export async function getTeamData(teamId: string, token: string) {
-    const options = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
-    const response = await fetch(url, options);
-    const data = await response.json();
-    console.log(data);
-}
-
-interface Statistics {
+export interface Statistics {
     users: Array<[string, string]>, // id, name 
     userMessages: Record<string, number>, // id: count
     channels: Array<[string, string, number]> // id, name, message count
@@ -76,4 +65,15 @@ export async function getStatistics(teamId: string, token: string, since?: Date)
         userMessages: userMessages,
         channels: channels.data.value.map((channel) => [channel.id, channel.displayName, channelMessages[channel.id]])
     };
+}
+
+export async function getTeamData(teamId: string, token: string) {
+    const options = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+    const response = await fetch(url, options);
+    const data = await response.json();
+    console.log(data);
 }

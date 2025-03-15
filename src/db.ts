@@ -1,4 +1,5 @@
-import sql from "mssql";
+import { sql } from "mssql";
+import { Statistics } from "./graph";
 
 const config = {
     user: "username",
@@ -38,7 +39,7 @@ async function getMembers(teamId: string): Promise<Array<string>> {
     return result.recordset.map((row: { UserId: any; }) => row.UserId);
 }
 
-async function updateStatistics(teamId: string, members: Array<string>, messages: Record<string, number>) {
+async function updateStatistics(teamId: string, statistics: Statistics) {
     
 }
 
