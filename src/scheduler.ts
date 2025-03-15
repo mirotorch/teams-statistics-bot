@@ -15,7 +15,6 @@ export function addNotificationJob(teamId: string) {
     jobs[teamId].start();
 }
 
-
 async function sendStatistics(teamId: string) {
     const pageSize = 100;
     let continuationToken: string | undefined = undefined;

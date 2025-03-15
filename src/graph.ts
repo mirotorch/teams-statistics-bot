@@ -1,19 +1,19 @@
 import { configDotenv } from 'dotenv';
+import axios from "axios";
+
 console.log(process.env.DotenvPath);
 
 configDotenv({
     path: process.env.DotenvPath
 });
 
-const bearer = process.env.SECRET_DEV_BEARER; // This is a placeholder for the bearer token.
-const debugTeamId = process.env.SECRET_DEV_TEAMID; // This is a placeholder for the team id.
+// to use local server for testing
 const url = process.env.API_URL;
 
-
-export async function getAllData() {
+export async function getTeamData(teamId: string, token: string) {
     const options = {
         headers: {
-            Authorization: `Bearer ${bearer}`
+            Authorization: `Bearer ${token}`
         }
     };
     const response = await fetch(url, options);
@@ -21,46 +21,52 @@ export async function getAllData() {
     console.log(data);
 }
 
-export async function getMembersCount() {
+export async function getMembers(teamId: string, token: string) {
     const options = {
         headers: {
-            Authorization: `Bearer ${bearer}`
+            Authorization: `Bearer ${token}`
         }
     };
-    const response = await fetch(`${url}${debugTeamId}/members`, options);
+    const response = await fetch(`${url}${teamId}/members`, options);
     const data = await response.json();
     return data.value.length;
 }
 
-export async function getFileCount() {
-    const options = {
-        headers: {
-            Authorization: `Bearer ${bearer}`
-        }
-    };
-    const response = await fetch(`${url}${debugTeamId}`, options);
-    const data = await response.json();
-    const webUrl = data.webUrl;
 
-}
-
-export async function getMessageByUserCount() {
-    const options = {
+export async function getMessageCountByUser(teamId: string, token: string, since?: Date): Promise<Record<string, number>> {
+    const headers = {
         headers: {
-            Authorization: `Bearer ${bearer}`
-        }
+            Authorization: `Bearer ${token}`,
+        },
     };
-    const members = await (await fetch(`${url}${debugTeamId}/members`, options)).json();
-    let dict = {};
-    members.array.forEach(element => {
-        dict[element.id] = 0;
+    const userMessages = {};
+    const channels = await axios.get(`https://graph.microsoft.com/v1.0/teams/${teamId}/channels`, headers);
+
+    channels.data.value.forEach(async (channel: any) => {
+        const filter =  since == null ? "" : `?$filter=lastModifiedDateTime ge ${since}`;
+        let nextLink = `https://graph.microsoft.com/v1.0/teams/${teamId}/channels/${channel.id}/messages${filter}`;
+        try {
+            while (nextLink) {
+                const response = await axios.get(nextLink, headers);
+                const messages = response.data.value;
+
+                if (messages && messages.length > 0) {
+                    for (const message of messages) {
+                        const userId = message.from?.user?.id || "unknown";
+                        if (userId in userMessages) {
+                            userMessages[userId] += 1;
+                        } else {
+                            userMessages[userId] = 1;
+                        }
+                    }
+                }
+
+                nextLink = response.data["@odata.nextLink"] || null;
+            }
+        } catch (error) {
+            console.error("error fetching messages:", error.response?.data || error.message);
+            return 0;
+        }
     });
-    const channels = await (await fetch(`${url}${debugTeamId}/channels`, options)).json();
-    channels.array.forEach(async (element) => {
-        let messages = await (await fetch(`${url}${debugTeamId}/channels/${element.id}/messages`, options)).json();
-        messages.array.forEach(element => {
-            dict[element.from.user.id] += 1;
-        });
-    });
-    return dict;
+    return userMessages;
 }
