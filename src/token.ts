@@ -1,7 +1,14 @@
 import axios from "axios";
 
+const tenantId = process.env.TENANT_ID;
+const clientId = process.env.CLIENT_ID;
+const clientSecret = process.env.CLIENT_SECRET;
+const debug = process.env.DEBUG;
 
-async function getAccessToken(tenantId: string, clientId: string, clientSecret: string): Promise<string> {
+export async function getToken(): Promise<string> {
+    if (debug) {
+        return "debug_token";
+    }
     const url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
     const params = new URLSearchParams();
     params.append("client_id", clientId);
@@ -16,9 +23,4 @@ async function getAccessToken(tenantId: string, clientId: string, clientSecret: 
         console.error("token error:", error.response?.data || error.message);
         throw new Error("Failed to get access token");
     }
-}
-
-
-export function getToken(): string {
-    return "todo";
 }
