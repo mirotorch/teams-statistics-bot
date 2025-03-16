@@ -32,7 +32,7 @@ export class TeamsBot extends TeamsActivityHandler {
             );
             if (context.activity.conversation.conversationType === "channel") {
               console.log("Bot added to the team:", context.activity.conversation.id);
-              addNotificationJob(context.activity.conversation.id);
+              await addNotificationJob(context.activity.conversation.id);
             }
           }
         }

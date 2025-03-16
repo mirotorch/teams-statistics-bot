@@ -3,11 +3,13 @@ import statisticsTemplate from "./adaptiveCards/statistics-default.json";
 import { notificationApp } from "./internal/initialize";
 import { NotificationTargetType } from "@microsoft/teamsfx";
 import { CronJob } from 'cron';
+import { initStatistics, CardInfo, getCardInfo } from "./statistics";
 
 const jobs: Record<string, CronJob> = {};
 
 
-export function addNotificationJob(teamId: string) {
+export async function addNotificationJob(teamId: string) {
+    await initStatistics(teamId);
     jobs[teamId] = new CronJob('0 * * * * *', async () => {
         await sendStatistics(teamId);
     }, null, false, 'UTC');
@@ -15,7 +17,7 @@ export function addNotificationJob(teamId: string) {
     jobs[teamId].start();
 }
 
-async function sendStatistics(teamId: string) {
+async function sendCard(teamId: string, info: CardInfo) {
     const pageSize = 100;
     let continuationToken: string | undefined = undefined;
     do {
