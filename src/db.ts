@@ -2,10 +2,10 @@ import { sql } from "mssql";
 import { Statistics } from "./graph";
 
 const config = {
-    user: "username",
-    password: "password",
-    server: "localhost",
-    database: "mydb",
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    server: process.env.DB_SERVER,
+    database: process.env.DB_DATABASE,
     options: {
         encrypt: true,
         trustServerCertificate: true,

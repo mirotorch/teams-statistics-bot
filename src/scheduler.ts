@@ -11,7 +11,8 @@ const jobs: Record<string, CronJob> = {};
 export async function addNotificationJob(teamId: string) {
     await initStatistics(teamId);
     jobs[teamId] = new CronJob('0 * * * * *', async () => {
-        await sendStatistics(teamId);
+        const info = await getCardInfo(teamId);
+        await sendCard(teamId, info);
     }, null, false, 'UTC');
     console.log(`Job added for team ${teamId}`);
     jobs[teamId].start();
@@ -33,15 +34,7 @@ async function sendCard(teamId: string, info: CardInfo) {
             if (target.type === NotificationTargetType.Channel && target.conversationReference?.conversation?.id === teamId) {
                 await target.sendAdaptiveCard(
                     new ACData.Template(statisticsTemplate).expand({
-                        $root: {
-                            title: "Team Statistics",
-                            text: "todo text",
-                            msgMost: "todo msgMost",
-                            msgLeast: "todo msgLeast",
-                            msgCount: "todo msgCount",
-                            fileCount: "todo fileCount",
-                            userCount: "todo userCount",
-                        },
+                        $root: info,
                     })
                 );
                 sent = true;
