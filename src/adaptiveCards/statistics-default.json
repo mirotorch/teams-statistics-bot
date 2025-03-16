@@ -16,20 +16,20 @@
             "type": "FactSet",
             "facts": [
                 {
-                    "title": "Most messages:",
-                    "value": "${msgMost}"
+                    "title": "Most active user:",
+                    "value": "${userMostActive}"
                 },
                 {
-                    "title": "Least messages:",
-                    "value": "${msgLeast}"
+                    "title": "Least active user:",
+                    "value": "${userLeastActive}"
                 },
                 {
-                    "title": "Message count:",
+                    "title": "Most active channel:",
+                    "value": "${channelMostActive}"
+                },
+                {
+                    "title": "Total message count:",
                     "value": "${msgCount}"
-                },
-                {
-                    "title": "File count:",
-                    "value": "${fileCount}"
                 },
                 {
                     "title": "User count:",

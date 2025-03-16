@@ -21,6 +21,15 @@ async function getMostActiveUser(teamId: string): Promise<{ UserId: string, Disp
     return result.recordset[0];
 }
 
+async function getLeastActiveUser(teamId: string): Promise<{ UserId: string, DisplayName: string, MessageCount: number }> {
+    await sql.connect(config);
+    const result = await sql.query`
+    SELECT TOP 1 UserId, DisplayName, MessageCount
+    FROM Users
+    WHERE TeamId = ${teamId} AND IsInTeam = 1 ORDER BY MessageCount ASC`;
+    return result.recordset[0];
+}
+
 async function getMostActiveChannel(teamId: string): Promise<{ ChannelId: string, Name: string }> {
     await sql.connect(config);
     const result = await sql.query`
@@ -37,6 +46,24 @@ async function getMembers(teamId: string): Promise<Array<string>> {
     FROM Users
     WHERE TeamId = ${teamId} And IsInTeam = 1`;
     return result.recordset.map((row: { UserId: any; }) => row.UserId);
+}
+
+async function getMessageCount(teamId: string): Promise<number> {
+    await sql.connect(config);  
+    const result = await sql.query`
+    SELECT SUM(MessageCount) as MessageCount
+    FROM Users
+    WHERE TeamId = ${teamId} AND IsInTeam = 1`;
+    return result.recordset[0].MessageCount;
+}
+
+async function getUserCount(teamId: string): Promise<number> {
+    await sql.connect(config);
+    const result = await sql.query`
+    SELECT COUNT(UserId) as UserCount
+    FROM Users
+    WHERE TeamId = ${teamId} AND IsInTeam = 1`;
+    return result.recordset[0].UserCount;
 }
 
 async function updateStatistics(teamId: string, statistics: Statistics) {
@@ -98,4 +125,4 @@ async function createTables() {
 
 createTables();
 
-export { getMostActiveUser, getMostActiveChannel, getMembers, updateStatistics };
+export { getMostActiveUser, getMostActiveChannel, getUserCount, getMessageCount, getLeastActiveUser, updateStatistics };

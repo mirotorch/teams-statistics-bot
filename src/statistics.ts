@@ -1,6 +1,7 @@
 import { getStatistics } from './graph';
 import { getToken } from './token';
-import { updateStatistics } from './db';
+import { getLeastActiveUser, getMessageCount, getMostActiveChannel, getMostActiveUser, getUserCount, updateStatistics } from './db';
+import { get } from 'http';
 
 export interface CardInfo {
     title: string;
@@ -22,7 +23,6 @@ export async function initStatistics(teamId: string) {
     await updateStatistics(teamId, stats);
 }
 
-// todo use database
 export async function getCardInfo(teamId: string): Promise<CardInfo> {
     const token = await getToken();
     const stats = await getStatistics(teamId, token);
@@ -33,10 +33,10 @@ export async function getCardInfo(teamId: string): Promise<CardInfo> {
     return {
         title: "Team Statistics",
         text: `Last updated: ${actualizationDate[teamId].toLocaleString()}`,
-        userMostActive: stats.users.reduce((a, b) => a[1] > b[1] ? a : b)[0],
-        userLeastActive: stats.users.reduce((a, b) => a[1] < b[1] ? a : b)[0],
-        channelMostActive: stats.channels.reduce((a, b) => a[2] > b[2] ? a : b)[1],
-        msgCount: stats.channels.reduce((a, b) => a[2] + b[2]).toString(),
-        userCount: stats.users.length.toString(),
+        userMostActive: (await getMostActiveUser(teamId)).DisplayName,
+        userLeastActive: (await getLeastActiveUser(teamId)).DisplayName,
+        channelMostActive: (await getMostActiveChannel(teamId)).Name,
+        msgCount: (await getMessageCount(teamId)).toString(),
+        userCount: (await getUserCount(teamId)).toString(),
     };
 }
