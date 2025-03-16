@@ -1,4 +1,4 @@
-import { getStatistics, Statistics } from './graph';
+import { getStatistics } from './graph';
 import { getToken } from './token';
 import { updateStatistics } from './db';
 
@@ -22,6 +22,7 @@ export async function initStatistics(teamId: string) {
     await updateStatistics(teamId, stats);
 }
 
+// todo use database
 export async function getCardInfo(teamId: string): Promise<CardInfo> {
     const token = await getToken();
     const stats = await getStatistics(teamId, token);
