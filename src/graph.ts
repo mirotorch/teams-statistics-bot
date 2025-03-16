@@ -23,10 +23,10 @@ export async function getStatistics(teamId: string, token: string, since?: Date)
         },
     };
     const userMessages = {};
-    const channels = await axios.get(`https://graph.microsoft.com/v1.0/teams/${teamId}/channels`, headers);
+    const channels = await axios.get(`${url}/${teamId}/channels`, headers);
     const channelMessages = {};
 
-    const users = await axios.get(`https://graph.microsoft.com/v1.0/teams/${teamId}/members`);
+    const users = await axios.get(`${url}/${teamId}/members`);
     for (const user of users.data.value) {
         userMessages[user.id] = 0;
     }
@@ -34,7 +34,7 @@ export async function getStatistics(teamId: string, token: string, since?: Date)
     channels.data.value.forEach(async (channel: any) => {
         channelMessages[channel.id] = 0;
         const filter =  since == null ? "" : `?$filter=lastModifiedDateTime ge ${since}`;
-        let nextLink = `https://graph.microsoft.com/v1.0/teams/${teamId}/channels/${channel.id}/messages${filter}`;
+        let nextLink = `${url}/${teamId}/channels/${channel.id}/messages${filter}`;
         try {
             while (nextLink) {
                 const response = await axios.get(nextLink, headers);
