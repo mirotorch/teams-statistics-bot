@@ -1,7 +1,6 @@
 import { getStatistics } from './graph';
 import { getToken } from './token';
 import { getLeastActiveUser, getMessageCount, getMostActiveChannel, getMostActiveUser, getUserCount, updateStatistics } from './db';
-import { get } from 'http';
 
 export interface CardInfo {
     title: string;
@@ -14,7 +13,6 @@ export interface CardInfo {
 }
 
 const actualizationDate: Record<string, Date> = {};
-const lastStatistics: Record<string, CardInfo> = {};
 
 export async function initStatistics(teamId: string) {
     const token = await getToken();
