@@ -39,15 +39,6 @@ async function getMostActiveChannel(teamId: string): Promise<{ ChannelId: string
     return result.recordset[0];
 }
 
-async function getMembers(teamId: string): Promise<Array<string>> {
-    await sql.connect(config);
-    const result = await sql.query`
-    SELECT UserId
-    FROM Users
-    WHERE TeamId = ${teamId} And IsInTeam = 1`;
-    return result.recordset.map((row: { UserId: any; }) => row.UserId);
-}
-
 async function getMessageCount(teamId: string): Promise<number> {
     await sql.connect(config);  
     const result = await sql.query`
