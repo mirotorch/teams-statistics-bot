@@ -17,13 +17,13 @@ export interface Statistics {
 }
 
 export async function getStatistics(teamId: string, token: string, since?: Date): Promise<Statistics> {
-    const headers = {
+    const options = {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     };
     const userMessages = {};
-    const channels = await axios.get(`${url}/${teamId}/channels`, headers);
+    const channels = await axios.get(`${url}/${teamId}/channels`, options);
     const channelMessages = {};
 
     const users = await axios.get(`${url}/${teamId}/members`);
@@ -37,7 +37,7 @@ export async function getStatistics(teamId: string, token: string, since?: Date)
         let nextLink = `${url}/${teamId}/channels/${channel.id}/messages${filter}`;
         try {
             while (nextLink) {
-                const response = await axios.get(nextLink, headers);
+                const response = await axios.get(nextLink, options);
                 const messages = response.data.value;
 
                 if (messages && messages.length > 0) {
@@ -75,5 +75,5 @@ export async function getTeamData(teamId: string, token: string) {
     };
     const response = await fetch(url, options);
     const data = await response.json();
-    console.log(data);
+    return data;
 }
